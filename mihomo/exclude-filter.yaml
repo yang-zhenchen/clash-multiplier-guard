@@ -1,0 +1,45 @@
+# 高倍率节点保护 · mihomo 原生片段
+# ============================================================
+# 适用：手里是「自己写的 mihomo 配置」或「OpenClash 自定义覆写」，
+#       不想用 JS 脚本的场合。
+#
+# 两种用法，按你的订阅结构选一种：
+#
+#   A. 订阅是完整配置（proxies 直接列在配置里）→ 用「组级 exclude-filter」
+#   B. 订阅是 proxy-providers 结构            → 用「provider 级 exclude-filter」
+#      （更彻底：节点进不了内核，任何组都干净）
+#
+# 正则含义：名字里带 [3] [4.0] [6] [10.0] 这类 >= 阈值的倍率标记。
+#   阈值 3 → (?:[3-9]|[1-9]\d+)
+#   阈值 4 → (?:[4-9]|[1-9]\d+)
+#   阈值 6 → (?:[6-9]|[1-9]\d+)
+#   阈值 10 → [1-9]\d+
+# ============================================================
+
+# ---------- A. 组级（只影响自动组选择，高倍率节点仍可手选）----------
+proxy-groups:
+  - name: "♻️ 自动选择"
+    type: url-test
+    url: "http://www.gstatic.com/generate_204"
+    interval: 300
+    tolerance: 50
+    # >= 3 倍不参与自动选择
+    exclude-filter: '\[\s*(?:[3-9]|[1-9]\d+)(?:\.\d+)?\s*[\]】]'
+    proxies:
+      - "🇭🇰 香港宽频D1"
+      - "🇭🇰 香港宽频D2"
+      # …订阅里剩下的节点
+
+# ---------- B. provider 级（节点级剔除，全客户端生效）----------
+proxy-providers:
+  my-sub:
+    type: http
+    url: "https://example.com/api/v1/client/subscribe?token=xxx"
+    path: ./providers/my-sub.yaml
+    interval: 3600
+    # >= 3 倍的节点在拉取后直接剔除
+    exclude-filter: '\[\s*(?:[3-9]|[1-9]\d+)(?:\.\d+)?\s*[\]】]'
+    health-check:
+      enable: true
+      url: "http://www.gstatic.com/generate_204"
+      interval: 300
