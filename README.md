@@ -16,6 +16,7 @@
 | --- | --- | --- | --- |
 | Clash Party | `clash-party/no-high-multiplier.js` | 覆写 → 填 URL 导入 → 在订阅上启用 | ✅ |
 | Clash Verge Rev（mihomo 内核） | `clash-party/no-high-multiplier.js` | 订阅 → 全局扩展脚本，粘贴内容 | ✅ |
+| FlClash（0.9.x，Android/Windows） | `clash-party/no-high-multiplier.js` | 进阶配置 → 脚本（导入）；订阅 → 扩展 → 扩展模式「脚本」 | ✅ |
 | 手机 / 路由器 / 其他客户端 | `substore/no-high-multiplier.js` | Sub-Store → 订阅 → 节点操作 → 脚本 | ❌（节点从订阅里删掉） |
 | 手写 mihomo 配置 / OpenClash | `mihomo/exclude-filter.yaml` | 合并进配置 | ✅（组级用法） |
 
@@ -44,10 +45,24 @@
 订阅页 → **全局扩展脚本**（Global Script）→ 把 `clash-party/no-high-multiplier.js` 的内容整段粘进去 → 保存。
 函数签名是 `function main(config)`，两边通用，不用改。
 
+### FlClash（Android / Windows，0.9.x）
+
+FlClash 的覆写叫「扩展」，脚本走 QuickJS，函数签名同样是 `function main(config)`，脚本可以直接用同一个文件。
+
+1. **工具 → 进阶配置 → 脚本** → 右上角 `+`
+   - **通过URL导入**：粘贴 `clash-party/no-high-multiplier.js` 的 raw / jsDelivr 链接（导入后显示为「远程」，之后可长按「同步」更新）
+   - 或 **通过文件导入**：选本地 .js 文件（显示为「本地」，适合手机打不开 GitHub 的情况）
+2. 回到 **配置** 页，长按订阅卡片 → **扩展**
+3. **扩展模式** 选 **「脚本」**（默认是「标准」，不切就永远不执行），**扩展脚本** 里点选刚导入的脚本
+4. 右上角 **立即应用**（退出该页面也会自动应用）
+5. 验证：长按卡片 → **更多 → 运行时配置**，搜 `exclude-filter` 应看到带 `1\.\d*[1-9]\d*` 的正则
+
+> 0.8.x 的入口叫「覆写」：工具 → 进阶配置 → 覆写脚本，订阅卡片 ⋮ → 更多 → 覆写 → 覆写模式选「脚本」。
+
 ### Sub-Store（手机等一切客户端）
 
 订阅 → 编辑 → **节点操作** → 添加 → 类型选 **脚本** → 粘贴 `substore/no-high-multiplier.js` 的内容。
-**脚本参数**填阈值（如 `3`），不填默认 3。
+**脚本参数**填阈值（如 `3`），不填默认 `1`（即「> 1 倍」口径，`1.0` 保留）。
 之后所有订阅这条链接的客户端（Clash Meta for Android、FlClash、Karing、Shadowrocket、OpenClash……）拿到的节点里都不会有高倍率节点。
 
 ### mihomo 原生 / OpenClash
