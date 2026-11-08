@@ -21,7 +21,7 @@ async function operator(proxies = [], targetPlatform, context) {
     arg = Array.isArray($arguments) ? $arguments[0] : $arguments
   }
   var threshold = parseFloat(String(arg == null ? '' : arg).trim())
-  if (!isFinite(threshold) || threshold <= 0) threshold = 3
+  if (!isFinite(threshold) || threshold <= 0) threshold = 1 // 默认 1：只留 1 倍以下的折扣节点
 
   // 从节点名里解析倍率：支持 [4.0] 【4】 1.5x x1.5 4倍
   function multiplierOf(name) {
